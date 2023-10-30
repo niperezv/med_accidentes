@@ -3,6 +3,7 @@ import pandas as pd
 import datetime
 import matplotlib.pyplot as plt
 import matplotlib.pylab as plt
+import joblib
 
 #inputs para la frecuencia
 st.sidebar.title("Frecuencia en la que deseas visualizar los datos")
@@ -14,6 +15,8 @@ checkbox_mensual = st.sidebar.checkbox("Mensualmente")
 datam = pd.read_csv("resultados_incidentes_viales2.csv", sep=',', on_bad_lines='skip', dtype={'NUMCOMUNA': 'bytes', 'ANO': 'int'})
 datam['FECHA'] = pd.to_datetime(datam['FECHA'])
 datam['CLASE_ACCIDENTE'] = datam['CLASE_ACCIDENTE'].replace('Caida Ocupante', 'Caída de Ocupante')
+
+modelo = joblib.load('modelo_glm2.pkl')
 #datam['ANO'] = datam['ANO'].str.replace('.', '').astype(int)
 
 #funcion para mostrar df segun fecha
@@ -25,7 +28,8 @@ def load_df(year):
 #funcion para mostrar df segun año
 
 def load_df2(year,type_a):
-    data_fecha_especifica = datam[(datam['ANO'] == year) & (datam['CLASE_ACCIDENTE'] == type_a)] 
+    data_fecha_especifica = datam[(datam['ANO'] == year) & (datam['CLASE_ACCIDENTE'] == type_a)]
+    st.write(data_fecha_especifica) 
     return data_fecha_especifica
 
 tab1, tab2, tab3 = st.tabs(["Datos historicos", "Predecir Accidentalidad", "Mapa accidentalidad"])
@@ -81,10 +85,55 @@ with tab1:
 
 with tab2:
     st.header("Predecir accidentalidad")
-    options2 = st.multiselect('label2',
-                             ['Atropello', 'Caída de Ocupante', 'Choque', 'Incendio', 'Volcamiento', 'Otro'],
-                             ['Atropello'], label_visibility="hidden")
-    d2 = st.date_input("Ingresa una fecha", value = None)
+    int_min = datetime.date(2021, 1, 1)
+    int_max = datetime.date(2022, 12, 31)
+    prect_fecha = st.date_input("Ingresa una fecha", value=None, min_value=int_min, max_value=int_max)
+    prect_festi = st.selectbox("Es festivo?",
+                               ("NO FESTIVO", "FESTIVO", "SEM_SANTA", "NAVIDAD", "MADRES", "BRUJAS", "A_NUEVO"),
+                               index=None,
+                               placeholder="Seleccione No Festivo o el tipo de día feriado")
+    prect_dia = st.selectbox("Que día de la semana es?",
+                             ("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"),
+                             index=None)
+    prect_quincena = st.selectbox("Es quincena?",
+                                  (0, 1),
+                                  index=None,
+                                  placeholder="Seleccione 1:Si, 0:No")
+    prect_clase = st.selectbox("Que clase de accidente es?",
+                              ("Atropello", "Caída de Ocupante", "Choque", "Incendio", "Volcamiento", "Otro"),
+                              index=None)
+    # Crear un diccionario con los valores de las variables independientes para la nueva entrada
+    nueva_entrada = {
+        'FECHA': prect_fecha,
+        'FESTIVIDAD': prect_festi,
+        'DIA_SEMANA': prect_dia,
+        'DIA_QUINCENA': prect_quincena,
+        'CLASE_ACCIDENTE': prect_clase
+    }
+
+    prect_fecha = str(prect_fecha)
+    prect_festi = prect_festi
+    prect_dia = prect_dia
+    prect_quincena = prect_quincena
+    prect_clase = prect_clase
+
+    nueva_entrada2 = {
+    'FECHA':prect_fecha,
+    'FESTIVIDAD':prect_festi,
+    'DIA_SEMANA':prect_dia,
+    'DIA_QUINCENA':prect_quincena,
+    'CLASE_ACCIDENTE': prect_clase
+    }
+
+    # Crear un DataFrame a partir de la nueva entrada
+    nueva_entrada_df = pd.DataFrame([nueva_entrada2])
+
+    # Realizar la predicción usando el modelo results2
+    prediccion = modelo.predict(nueva_entrada_df)
+
+    # Mostrar el número predicho de accidentes en la aplicación Streamlit
+    st.write("Número predicho de accidentes:", prediccion[0])
+
 
 with tab3:
     st.header("Mapa accidentalidad")
