@@ -68,8 +68,8 @@ def run():
     footer_content = """
     <div class="footer">
     Amilder Stewin Ospina Tobón<br>
-    Nicolás Pérez Vásquez<br>
     John Stiven Mejía Lopera<br>
+    Nicolás Pérez Vásquez<br>
     |
     <a href="https://github.com/niperezv/med_accidentes" target="_blank">
     Repositorio GitHub
