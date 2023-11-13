@@ -204,8 +204,8 @@ with tab3:
     'cluster_4' : 'Baja',
     'cluster_5': 'Muy baja'
     }
-    ruta_html1 = 'mapa_grupoJ.html'
-    ruta_html = 'pages/mapa_grupoJ.html'
+    ruta_html1 = 'med_accidentes/mapa_grupoJ.html'
+    ruta_html = 'mapa_grupoJ.html'
     with open(ruta_html1, "r", encoding="utf-8") as file:
         contenido_html = file.read()
         #st.write("Ruta del archivo HTML:", ruta_html)
