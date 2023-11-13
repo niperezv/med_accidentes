@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import datetime
 import matplotlib.pyplot as plt
@@ -202,7 +203,8 @@ with tab3:
     'cluster_4' : 'Baja',
     'cluster_5': 'Muy baja'
     }
-
     ruta_html = 'pages\mapa_grupoJ.html'
-    st.markdown(f'<iframe src="{ruta_html}" width=800 height=600></iframe>', unsafe_allow_html=True)
+    with open(ruta_html, "r", encoding="utf-8") as file:
+        contenido_html = file.read()
+    components.html(contenido_html, width = 800, height = 400, scrolling = False)
 st.warning("Advertencia: La predicción de accidentes se basa en datos de accidentalidad y no garantiza resultados precisos o absolutos.")
