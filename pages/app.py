@@ -108,7 +108,7 @@ with tab1:
             #diario
             if checkbox_diario:
                 st.subheader("Diariamente")
-                date_range = pd.date_range(start='2014-07-04', end='2014-12-31')
+                date_range = pd.date_range(start='2014-07-04', end='2020-12-31')
                 day_counts = data_actual['FECHA'].dt.date.value_counts().reindex(date_range, fill_value=0)
                 st.bar_chart(day_counts)
             else:
