@@ -1,14 +1,20 @@
 altair==5.1.2
 attrs==23.1.0
 blinker==1.6.3
+branca==0.7.0
 cachetools==5.3.2
 certifi==2023.7.22
 charset-normalizer==3.3.1
 click==8.1.7
+click-plugins==1.1.1
+cligj==0.7.2
 colorama==0.4.6
 contourpy==1.1.1
 cycler==0.12.1
+fiona==1.9.5
+folium==0.15.0
 fonttools==4.43.1
+geopandas==0.14.1
 gitdb==4.0.11
 GitPython==3.1.40
 idna==3.4
@@ -32,6 +38,7 @@ pyarrow==13.0.0
 pydeck==0.8.1b0
 Pygments==2.16.1
 pyparsing==3.1.1
+pyproj==3.6.1
 python-dateutil==2.8.2
 pytz==2023.3.post1
 referencing==0.30.2
@@ -39,6 +46,7 @@ requests==2.31.0
 rich==13.6.0
 rpds-py==0.10.6
 scipy==1.11.3
+shapely==2.0.2
 six==1.16.0
 smmap==5.0.1
 statsmodels==0.14.0
