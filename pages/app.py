@@ -4,6 +4,11 @@ import datetime
 import matplotlib.pyplot as plt
 import matplotlib.pylab as plt
 import joblib
+import geopandas as gpd
+import folium
+import pandas as pd
+import json
+
 
 #inputs para la frecuencia
 st.sidebar.title("Frecuencia en la que deseas visualizar los datos")
@@ -12,6 +17,7 @@ checkbox_semanal = st.sidebar.checkbox("Semanalmente")
 checkbox_mensual = st.sidebar.checkbox("Mensualmente")
 
 #carga de datos y procesaminto
+final = pd.read_csv("final.csv")
 datam = pd.read_csv("resultados_incidentes_viales2.csv", sep=',', on_bad_lines='skip', dtype={'NUMCOMUNA': 'bytes', 'ANO': 'int'})
 datam['FECHA'] = pd.to_datetime(datam['FECHA'])
 datam['CLASE_ACCIDENTE'] = datam['CLASE_ACCIDENTE'].replace('Caida Ocupante', 'Caída de Ocupante')
@@ -19,6 +25,45 @@ datam['CLASE_ACCIDENTE'] = datam['CLASE_ACCIDENTE'].replace('Caida Ocupante', 'C
 modelo = joblib.load('modelo_glm2.pkl')
 #datam['ANO'] = datam['ANO'].str.replace('.', '').astype(int)
 
+#funcion para definir estilo del mapa
+def style_function2(feature):
+    return {
+        "fillColor": feature["properties"]["color"],
+        "fillOpacity": 0.72,
+        "stroke": True,
+        "strokeOpacity": 0.2,
+        "color": "black",
+        "weight": 1,
+    }
+
+#funcion para crear mapa
+def crear_mapa_todo(datos,diccionario,color_dict,Grupo):
+  barrios_med = gpd.read_file('Barrio_Vereda.dbf')
+  barrios_med['color'] = 'gray'
+  barrios_med['grupo'] = 'No clasificado'
+
+
+  for lista, barrios in diccionario.items():
+    color = color_dict.get(lista, 'gray')  # Obtiene el color correspondiente a la lista o 'gray' si no se encuentra
+    grupo = Grupo.get(lista, 'No clasificado')
+
+    barrios_med.loc[barrios_med['NOMBRE'].isin(barrios), 'color'] = color
+    barrios_med.loc[barrios_med['NOMBRE'].isin(barrios), 'grupo'] = grupo
+
+  mapa = folium.Map(width=800, height=400, zoom_start=11, location=[6.27,-75.60])
+  folium.TileLayer('openstreetmap').add_to(mapa)
+  folium.GeoJson(data = barrios_med,
+               name = 'NOMBRE',
+               style_function = style_function2,
+               popup = folium.GeoJsonPopup(
+                  fields = ['NOMBRE','grupo'],
+                  aliases = ['Barrio', 'Accidentalidad']
+               )
+               ).add_to(mapa)
+
+
+  mapa.save('mapa_grupoJ.html')
+  st.markdown('<iframe src="mapa_grupoJ.html" width=800 height=400></iframe>', unsafe_allow_html=True)
 #funcion para mostrar df segun fecha
 def load_df(year):
     fecha_especifica = pd.to_datetime(year)
@@ -39,7 +84,7 @@ with tab1:
     options = st.selectbox(
    "Que tipo de accidente desea visualizar?",
    ("Atropello", "Caída de Ocupante", "Choque", "Incendio", "Volcamiento", "Otro"),
-   index=None,
+   index=0,
    placeholder="Seleccionar tipo accidente...",
    )
     #d = st.date_input("Desde que fecha desea visualizar los incidentes", datetime.date(2014,10,22))
@@ -124,19 +169,40 @@ with tab2:
     'DIA_QUINCENA':prect_quincena,
     'CLASE_ACCIDENTE': prect_clase
     }
+    if prect_fecha is not None and prect_festi is not None and prect_dia is not None and prect_quincena is not None and prect_clase is not None:
+        # Crear un DataFrame a partir de la nueva entrada
+        nueva_entrada_df = pd.DataFrame([nueva_entrada2])
 
-    # Crear un DataFrame a partir de la nueva entrada
-    nueva_entrada_df = pd.DataFrame([nueva_entrada2])
+        # Realizar la predicción usando el modelo results2
+        prediccion = modelo.predict(nueva_entrada_df)
 
-    # Realizar la predicción usando el modelo results2
-    prediccion = modelo.predict(nueva_entrada_df)
-
+        st.write("Número predicho de accidentes:", prediccion[0])
+    else:
+        st.error("Por favor, complete todas las entradas antes de realizar la predicción.")
     # Mostrar el número predicho de accidentes en la aplicación Streamlit
-    st.write("Número predicho de accidentes:", prediccion[0])
 
 
 with tab3:
     st.header("Mapa accidentalidad")
+    with open('diccionario.json', 'r') as f:
+        diccionario = json.load(f)
+    color_dict = {
+    'cluster_0': '#ba5252',
+    'cluster_1': '#fc3d73',
+    'cluster_2': '#AA8F85',
+    'cluster_3' : '#FF0F53',
+    'cluster_4' : '#52CAA7',
+    'cluster_5': '#52E6A7'
+    }
+    Grupo = {
+    'cluster_0': 'Media-Alta',
+    'cluster_1': 'Alta',
+    'cluster_2': 'Media-Baja',
+    'cluster_3' : 'Muy alta',
+    'cluster_4' : 'Baja',
+    'cluster_5': 'Muy baja'
+    }
 
-
+    ruta_html = 'pages\mapa_grupoJ.html'
+    st.markdown(f'<iframe src="{ruta_html}" width=800 height=600></iframe>', unsafe_allow_html=True)
 st.warning("Advertencia: La predicción de accidentes se basa en datos de accidentalidad y no garantiza resultados precisos o absolutos.")
