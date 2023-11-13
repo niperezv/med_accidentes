@@ -9,6 +9,7 @@ import geopandas as gpd
 import folium
 import pandas as pd
 import json
+import os
 
 
 #inputs para la frecuencia
@@ -203,8 +204,10 @@ with tab3:
     'cluster_4' : 'Baja',
     'cluster_5': 'Muy baja'
     }
-    ruta_html = 'pages\mapa_grupoJ.html'
-    with open(ruta_html, "r", encoding="utf-8") as file:
+    ruta_html1 = '/workspaces/med_accidentes/mapa_grupoJ.html'
+    ruta_html = 'pages/mapa_grupoJ.html'
+    with open(ruta_html1, "r", encoding="utf-8") as file:
         contenido_html = file.read()
+        #st.write("Ruta del archivo HTML:", ruta_html)
     components.html(contenido_html, width = 800, height = 400, scrolling = False)
 st.warning("Advertencia: La predicción de accidentes se basa en datos de accidentalidad y no garantiza resultados precisos o absolutos.")
