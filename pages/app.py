@@ -137,3 +137,6 @@ with tab2:
 
 with tab3:
     st.header("Mapa accidentalidad")
+
+
+st.warning("Advertencia: La predicción de accidentes se basa en datos de accidentalidad y no garantiza resultados precisos o absolutos.")
