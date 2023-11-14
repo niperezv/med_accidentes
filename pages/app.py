@@ -23,6 +23,7 @@ final = pd.read_csv("final.csv")
 datam = pd.read_csv("resultados_incidentes_viales2.csv", sep=',', on_bad_lines='skip', dtype={'NUMCOMUNA': 'bytes', 'ANO': 'int'})
 datam['FECHA'] = pd.to_datetime(datam['FECHA'])
 datam['CLASE_ACCIDENTE'] = datam['CLASE_ACCIDENTE'].replace('Caida Ocupante', 'Caída de Ocupante')
+datam = datam.drop(["DIRECCION","DISENO","MES","NUMCOMUNA","FECHA_ACCIDENTE","BARRIO","COMUNA","LONGITUD","LATITUD",], axis=1)
 
 modelo = joblib.load('modelo_glm2.pkl')
 #datam['ANO'] = datam['ANO'].str.replace('.', '').astype(int)
@@ -70,14 +71,12 @@ def crear_mapa_todo(datos,diccionario,color_dict,Grupo):
 def load_df(year):
     fecha_especifica = pd.to_datetime(year)
     data_fecha_especifica = datam[datam['FECHA'].dt.date == fecha_especifica.date()]
-    data_fecha_especifica = datam.drop(["DIRECCION","DISENO","MES","NUMCOMUNA","FECHA_ACCIDENTE","BARRIO","COMUNA","LONGITUD","LATITUD",], axis=1)
     st.write(data_fecha_especifica)
 
 #funcion para mostrar df segun año
 
 def load_df2(year,type_a):
     data_fecha_especifica = datam[(datam['ANO'] == year) & (datam['CLASE_ACCIDENTE'] == type_a)]
-    data_fecha_especifica = datam.drop(["DIRECCION","DISENO","MES","NUMCOMUNA","FECHA_ACCIDENTE","BARRIO","COMUNA","LONGITUD","LATITUD",], axis=1)
     st.write(data_fecha_especifica) 
     return data_fecha_especifica
 
