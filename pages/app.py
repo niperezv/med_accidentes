@@ -106,57 +106,60 @@ with tab1:
     #graficas
     #diariamente
     if option_ano is not None:  # Verifica que se haya seleccionado un año
-        option_ano = int(option_ano)
-        data_actual = load_df2(option_ano, options)
-        data_actual2 = load_df3(option_ano)
+        option_ano = int(option_ano) 
+        
 
-        if data_actual is not None and options == "No diferenciar por tipo":
-            if checkbox_diario:
-                st.subheader("Diariamente")
-                date_range = pd.date_range(start=data_actual2.loc[data_actual2.index[0], "FECHA"], end=data_actual2.loc[data_actual2.index[-1], "FECHA"])
-                day_counts = data_actual2['FECHA'].dt.date.value_counts().reindex(date_range, fill_value=0)
-                st.bar_chart(day_counts)
+        if options == "No diferenciar por tipo":
+            data_actual2 = load_df3(option_ano)
+            if data_actual2 is not None:
+                if checkbox_diario:
+                    st.subheader("Diariamente")
+                    date_range = pd.date_range(start=data_actual2.loc[data_actual2.index[0], "FECHA"], end=data_actual2.loc[data_actual2.index[-1], "FECHA"])
+                    day_counts = data_actual2['FECHA'].dt.date.value_counts().reindex(date_range, fill_value=0)
+                    st.bar_chart(day_counts)
+                else:
+                    st.info("Marca la casilla 'Diariamente' para ver la gráfica diaria.")
+                if checkbox_semanal:
+                    st.subheader("Semanalmente")
+                    weekly_counts = data_actual2['SEMANA'].value_counts().sort_index()
+                    st.bar_chart(weekly_counts)
+                else:
+                    st.info("Marca la casilla 'Semanalmente' para ver la gráfica semanal.")
+                if checkbox_mensual:
+                    st.subheader("Mensualmente")
+                    month_counts = data_actual2['MES'].value_counts().sort_index()
+                    st.bar_chart(month_counts)
+                else:
+                    st.info("Marca la casilla 'Mensualmente' para ver la gráfica anual.")
             else:
-                st.info("Marca la casilla 'Diariamente' para ver la gráfica diaria.")
-            if checkbox_semanal:
-                st.subheader("Semanalmente")
-                weekly_counts = data_actual2['SEMANA'].value_counts().sort_index()
-                st.bar_chart(weekly_counts)
-            else:
-                st.info("Marca la casilla 'Semanalmente' para ver la gráfica semanal.")
-            if checkbox_mensual:
-                st.subheader("Mensualmente")
-                month_counts = data_actual2['MES'].value_counts().sort_index()
-                st.bar_chart(month_counts)
-            else:
-                st.info("Marca la casilla 'Mensualmente' para ver la gráfica anual.")
+                st.warning("No se han cargado datos. Asegúrate de cargar los datos primero.")
                 
-        elif data_actual is not None:
+        else:
             #metricas
             #diario
-            if checkbox_diario:
-                st.subheader("Diariamente")
-                date_range = pd.date_range(start=data_actual.loc[data_actual.index[0], "FECHA"], end=data_actual.loc[data_actual.index[-1], "FECHA"])
-                day_counts = data_actual['FECHA'].dt.date.value_counts().reindex(date_range, fill_value=0)
-                st.bar_chart(day_counts)
-            else:
-                st.info("Marca la casilla 'Diariamente' para ver la gráfica diaria.")
-            if checkbox_semanal:
-                st.subheader("Semanalmente")
-                weekly_counts = data_actual['SEMANA'].value_counts().sort_index()
-                st.bar_chart(weekly_counts)
-            else:
-                st.info("Marca la casilla 'Semanalmente' para ver la gráfica semanal.")
-            if checkbox_mensual:
-                st.subheader("Mensualmente")
-                month_counts = data_actual['MES'].value_counts().sort_index()
-                st.bar_chart(month_counts)
-            else:
-                st.info("Marca la casilla 'Mensualmente' para ver la gráfica anual.")
-        else:
-            st.warning("No se han cargado datos. Asegúrate de cargar los datos primero.")
+            data_actual = load_df2(option_ano, options)
+            if data_actual is not None:
+                if checkbox_diario:
+                    st.subheader("Diariamente")
+                    date_range = pd.date_range(start=data_actual.loc[data_actual.index[0], "FECHA"], end=data_actual.loc[data_actual.index[-1], "FECHA"])
+                    day_counts = data_actual['FECHA'].dt.date.value_counts().reindex(date_range, fill_value=0)
+                    st.bar_chart(day_counts)
+                else:
+                    st.info("Marca la casilla 'Diariamente' para ver la gráfica diaria.")
+                if checkbox_semanal:
+                    st.subheader("Semanalmente")
+                    weekly_counts = data_actual['SEMANA'].value_counts().sort_index()
+                    st.bar_chart(weekly_counts)
+                else:
+                    st.info("Marca la casilla 'Semanalmente' para ver la gráfica semanal.")
+                if checkbox_mensual:
+                    st.subheader("Mensualmente")
+                    month_counts = data_actual['MES'].value_counts().sort_index()
+                    st.bar_chart(month_counts)
+                else:
+                    st.info("Marca la casilla 'Mensualmente' para ver la gráfica anual.")
     else:
-        st.warning("No se han cargado datos. Asegúrate de cargar los datos primero.")
+        st.warning("No se ha seleccionado un año.")
 
 with tab2:
     st.header("Predecir accidentalidad")
