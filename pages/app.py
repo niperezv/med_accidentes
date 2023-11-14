@@ -70,12 +70,14 @@ def crear_mapa_todo(datos,diccionario,color_dict,Grupo):
 def load_df(year):
     fecha_especifica = pd.to_datetime(year)
     data_fecha_especifica = datam[datam['FECHA'].dt.date == fecha_especifica.date()]
+    data_fecha_especifica = datam.drop(["DIRECCION","DISENO","MES","NUMCOMUNA","FECHA_ACCIDENTE","BARRIO","COMUNA","LONGITUD","LATITUD",], axis=1)
     st.write(data_fecha_especifica)
 
 #funcion para mostrar df segun año
 
 def load_df2(year,type_a):
     data_fecha_especifica = datam[(datam['ANO'] == year) & (datam['CLASE_ACCIDENTE'] == type_a)]
+    data_fecha_especifica = datam.drop(["DIRECCION","DISENO","MES","NUMCOMUNA","FECHA_ACCIDENTE","BARRIO","COMUNA","LONGITUD","LATITUD",], axis=1)
     st.write(data_fecha_especifica) 
     return data_fecha_especifica
 
