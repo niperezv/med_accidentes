@@ -32,7 +32,11 @@ def run():
     """
     )
 
-    st.header('🎬Video Promocional🎬')
+    st.header('🎬  Video Promocional  🎬')
+    video_file = open('video_trabajo2.mkv', 'rb')
+    video_bytes = video_file.read()
+
+    st.video(video_bytes)
 
     st.markdown(
         """

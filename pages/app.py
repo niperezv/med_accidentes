@@ -9,6 +9,7 @@ import geopandas as gpd
 import folium
 import pandas as pd
 import json
+import os
 
 
 #inputs para la frecuencia
@@ -22,6 +23,7 @@ final = pd.read_csv("final.csv")
 datam = pd.read_csv("resultados_incidentes_viales2.csv", sep=',', on_bad_lines='skip', dtype={'NUMCOMUNA': 'bytes', 'ANO': 'int'})
 datam['FECHA'] = pd.to_datetime(datam['FECHA'])
 datam['CLASE_ACCIDENTE'] = datam['CLASE_ACCIDENTE'].replace('Caida Ocupante', 'Caída de Ocupante')
+datam = datam.drop(["DIRECCION","DISENO","NUMCOMUNA","FECHA_ACCIDENTE","BARRIO","COMUNA","LONGITUD","LATITUD",], axis=1)
 
 modelo = joblib.load('modelo_glm2.pkl')
 #datam['ANO'] = datam['ANO'].str.replace('.', '').astype(int)
@@ -78,13 +80,18 @@ def load_df2(year,type_a):
     st.write(data_fecha_especifica) 
     return data_fecha_especifica
 
+def load_df3(year):
+    data_fecha_especifica = datam[datam['ANO']== year]
+    st.write(data_fecha_especifica)
+    return data_fecha_especifica
+
 tab1, tab2, tab3 = st.tabs(["Datos historicos", "Predecir Accidentalidad", "Mapa accidentalidad"])
 
 with tab1:
     st.header("Datos historicos")
     options = st.selectbox(
    "Que tipo de accidente desea visualizar?",
-   ("Atropello", "Caída de Ocupante", "Choque", "Incendio", "Volcamiento", "Otro"),
+   ("Atropello", "Caída de Ocupante", "Choque", "Incendio", "Volcamiento", "Otro","No diferenciar por tipo"),
    index=0,
    placeholder="Seleccionar tipo accidente...",
    )
@@ -99,35 +106,60 @@ with tab1:
     #graficas
     #diariamente
     if option_ano is not None:  # Verifica que se haya seleccionado un año
-        option_ano = int(option_ano)
-        data_actual = load_df2(option_ano, options)
+        option_ano = int(option_ano) 
+        
 
-        if data_actual is not None:
+        if options == "No diferenciar por tipo":
+            data_actual2 = load_df3(option_ano)
+            if data_actual2 is not None:
+                if checkbox_diario:
+                    st.subheader("Diariamente")
+                    date_range = pd.date_range(start=data_actual2.loc[data_actual2.index[0], "FECHA"], end=data_actual2.loc[data_actual2.index[-1], "FECHA"])
+                    day_counts = data_actual2['FECHA'].dt.date.value_counts().reindex(date_range, fill_value=0)
+                    st.bar_chart(day_counts)
+                else:
+                    st.info("Marca la casilla 'Diariamente' para ver la gráfica diaria.")
+                if checkbox_semanal:
+                    st.subheader("Semanalmente")
+                    weekly_counts = data_actual2['SEMANA'].value_counts().sort_index()
+                    st.bar_chart(weekly_counts)
+                else:
+                    st.info("Marca la casilla 'Semanalmente' para ver la gráfica semanal.")
+                if checkbox_mensual:
+                    st.subheader("Mensualmente")
+                    month_counts = data_actual2['MES'].value_counts().sort_index()
+                    st.bar_chart(month_counts)
+                else:
+                    st.info("Marca la casilla 'Mensualmente' para ver la gráfica anual.")
+            else:
+                st.warning("No se han cargado datos. Asegúrate de cargar los datos primero.")
+                
+        else:
             #metricas
             #diario
-            if checkbox_diario:
-                st.subheader("Diariamente")
-                date_range = pd.date_range(start='2014-07-04', end='2014-12-31')
-                day_counts = data_actual['FECHA'].dt.date.value_counts().reindex(date_range, fill_value=0)
-                st.bar_chart(day_counts)
-            else:
-                st.info("Marca la casilla 'Diariamente' para ver la gráfica diaria.")
-            if checkbox_semanal:
-                st.subheader("Semanalmente")
-                weekly_counts = data_actual['SEMANA'].value_counts().sort_index()
-                st.bar_chart(weekly_counts)
-            else:
-                st.info("Marca la casilla 'Semanalmente' para ver la gráfica semanal.")
-            if checkbox_mensual:
-                st.subheader("Mensualmente")
-                month_counts = data_actual['MES'].value_counts().sort_index()
-                st.bar_chart(month_counts)
-            else:
-                st.info("Marca la casilla 'Mensualmente' para ver la gráfica anual.")
-        else:
-            st.warning("No se han cargado datos. Asegúrate de cargar los datos primero.")
+            data_actual = load_df2(option_ano, options)
+            if data_actual is not None:
+                if checkbox_diario:
+                    st.subheader("Diariamente")
+                    date_range = pd.date_range(start=data_actual.loc[data_actual.index[0], "FECHA"], end=data_actual.loc[data_actual.index[-1], "FECHA"])
+                    day_counts = data_actual['FECHA'].dt.date.value_counts().reindex(date_range, fill_value=0)
+                    st.bar_chart(day_counts)
+                else:
+                    st.info("Marca la casilla 'Diariamente' para ver la gráfica diaria.")
+                if checkbox_semanal:
+                    st.subheader("Semanalmente")
+                    weekly_counts = data_actual['SEMANA'].value_counts().sort_index()
+                    st.bar_chart(weekly_counts)
+                else:
+                    st.info("Marca la casilla 'Semanalmente' para ver la gráfica semanal.")
+                if checkbox_mensual:
+                    st.subheader("Mensualmente")
+                    month_counts = data_actual['MES'].value_counts().sort_index()
+                    st.bar_chart(month_counts)
+                else:
+                    st.info("Marca la casilla 'Mensualmente' para ver la gráfica anual.")
     else:
-        st.warning("No se han cargado datos. Asegúrate de cargar los datos primero.")
+        st.warning("No se ha seleccionado un año.")
 
 with tab2:
     st.header("Predecir accidentalidad")
@@ -203,9 +235,10 @@ with tab3:
     'cluster_4' : 'Baja',
     'cluster_5': 'Muy baja'
     }
-    ruta_html = 'pages\mapa_grupoJ.html'
+    ruta_html1 = 'med_accidentes/mapa_grupoJ.html'
+    ruta_html = 'mapa_grupoJ.html'
     with open(ruta_html, "r", encoding="utf-8") as file:
-        st.write("Ruta del archivo HTML:", ruta_html)
-        #contenido_html = file.read()
-    #components.html(contenido_html, width = 800, height = 400, scrolling = False)
+        contenido_html = file.read()
+        #st.write("Ruta del archivo HTML:", ruta_html)
+    components.html(contenido_html, width = 800, height = 400, scrolling = False)
 st.warning("Advertencia: La predicción de accidentes se basa en datos de accidentalidad y no garantiza resultados precisos o absolutos.")
