@@ -205,6 +205,7 @@ with tab3:
     }
     ruta_html = 'pages\mapa_grupoJ.html'
     with open(ruta_html, "r", encoding="utf-8") as file:
-        contenido_html = file.read()
-    components.html(contenido_html, width = 800, height = 400, scrolling = False)
+        st.write("Ruta del archivo HTML:", ruta_html)
+        #contenido_html = file.read()
+    #components.html(contenido_html, width = 800, height = 400, scrolling = False)
 st.warning("Advertencia: La predicción de accidentes se basa en datos de accidentalidad y no garantiza resultados precisos o absolutos.")
