@@ -256,4 +256,8 @@ with tab3:
         contenido_html = file.read()
         #st.write("Ruta del archivo HTML:", ruta_html)
     components.html(contenido_html, width = 800, height = 400, scrolling = False)
+    st.write("Los colores grises indican sectores con muy poca informacion o muy baja accidentalidad para predecir")
+    st.write("Los colores verdes representan una accidentalidad muy baja - baja")
+    st.write("Los tonos rojos indican entre media y muy alta accidentalidad")
+
 st.warning("Advertencia: La predicción de accidentes se basa en datos de accidentalidad y no garantiza resultados precisos o absolutos.")
