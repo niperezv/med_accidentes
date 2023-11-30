@@ -59,11 +59,11 @@ texto_datos = """
 
 st.markdown(texto_datos)
 st.subheader("1.1. Integración de datos Geo-Medellín")
-st.write("También se hace la carga de un archivo.csv que contiene la información de las veredas, los barrios, las comunas de Medellín y los días festivos. La información vista en las siguientes 2 tablas será importante más adelante para hacer el mapeo de la accidentalidad en Medellín en diversos mapas.")
-st.write(datam)
+st.write("También se hace la carga de la *Tabla 1* que contiene la información de las veredas, los barrios, las comunas de Medellín y los días festivos. La información vista en las siguientes 2 tablas será importante más adelante para hacer el mapeo de la accidentalidad en Medellín en diversos mapas.")
+st.write(datam, '*Tabla 1*: Tabla de barrios y comunas')
 st.subheader("1.2 Días feriados")
 st.write("Para las fechas especiales se crean dos nuevas variables; FESTIVIDAD y FECHA. Estas variables provienen de una base de datos externa que se adiciona a la base de análisis y abarca los días feriados en Colombia desde 2014 hasta 2022")
-st.write(datam2)
+st.write(datam2, '*Tabla 2*: Tabla de festividades')
 st.subheader("1.3 Depuración")
 texto2 = '''A continuación se eliminan las columnas consideradas como innecesarias para el modelo: ["CBML", "DIRECCION ENCASILLADA", "EXPEDIENTE", "FECHA_ACCIDENTES", "NRO_RADICADO", "X", "Y"]. También se cruzan las fechas festivos con los días de la base de datos principal y se eliminan los valores nulos de ellas.
 
@@ -72,7 +72,7 @@ Luego de hacer la revisión de las variables y eliminar los datos irrecuperables
 Luego del proceso de depuración la base de datos se ve de esta manera:
 '''
 st.markdown(texto2)
-st.write(datam3)
+st.write(datam3, '*Tabla 3*: Tabla de base de datos depurada')
 st.sidebar.markdown("### Informe Completo")
 st.sidebar.write("Para visualizar el informe completo, haga clic en el enlace o en la imagen a continuación:")
 url_informe = "https://deepnote.com/@fundamentos-analitica-2023-2/AccidentesViales-e684d2cc-6f62-46a5-b8ee-0e6d44f83490"

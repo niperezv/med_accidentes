@@ -123,6 +123,7 @@ with tab1:
                     date_range = pd.date_range(start=data_actual2.loc[data_actual2.index[0], "FECHA"], end=data_actual2.loc[data_actual2.index[-1], "FECHA"])
                     day_counts = data_actual2['FECHA'].dt.date.value_counts().reindex(date_range, fill_value=0)
                     st.bar_chart(day_counts)
+                    st.write(date_range)
                 else:
                     st.info("Marca la casilla 'Diariamente' para ver la gráfica diaria.")
                 if checkbox_semanal:
@@ -176,7 +177,8 @@ with tab2:
 
     fecha_inicio = st.date_input('Fecha de inicio', value=None, min_value=int_min, max_value=int_max)
     fecha_fin = st.date_input('Fecha de fin', value=None, min_value=int_min, max_value=int_max)
-
+    st.info("El rango de predicciones permitido va hasta la fecha: 31-12-2024")
+    
     prect_clase = st.selectbox("Que clase de accidente es?",
                               ("Atropello", "Caída de Ocupante", "Choque", "Incendio", "Volcamiento", "Otro","No diferenciar por tipo"),
                               index=None)
@@ -200,6 +202,28 @@ with tab2:
 
             st.write("Predicciones en el intervalo definido")
             st.write(Prediccion_intervalo2)
+
+            if checkbox_diario:
+                st.subheader("Diariamente")
+                date_range_pred = pd.date_range(start=fecha_inicio, end=fecha_fin)
+                day_counts_pred = Prediccion_intervalo2['FECHA'].dt.date.value_counts().reindex(date_range_pred, fill_value=0)
+                st.bar_chart(day_counts_pred)
+            else:
+                st.info("Marca la casilla 'Diariamente' para ver la gráfica diaria.")
+
+            if checkbox_semanal:
+                st.subheader("Semanalmente")
+                weekly_counts_pred = Prediccion_intervalo2['SEMANA'].value_counts().sort_index()
+                st.bar_chart(weekly_counts_pred)
+            else:
+                st.info("Marca la casilla 'Semanalmente' para ver la gráfica diaria.")
+
+            if checkbox_mensual:
+                st.subheader("Mensualmente")
+                month_counts_pred = Prediccion_intervalo2['MES'].value_counts().sort_index()
+                st.bar_chart(month_counts_pred)
+            else:
+                st.info("Marca la casilla 'Mensualmente' para ver la gráfica diaria.")
         else:
             st.error("Por favor, complete todas las entradas antes de realizar la predicción.")
     else:
