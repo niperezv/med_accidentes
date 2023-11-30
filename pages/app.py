@@ -25,6 +25,12 @@ datam['FECHA'] = pd.to_datetime(datam['FECHA'])
 datam['CLASE_ACCIDENTE'] = datam['CLASE_ACCIDENTE'].replace('Caida Ocupante', 'Caída de Ocupante')
 datam = datam.drop(["DIRECCION","DISENO","NUMCOMUNA","FECHA_ACCIDENTE","BARRIO","COMUNA","LONGITUD","LATITUD",], axis=1)
 
+predicciondf = pd.read_csv("predict.csv", sep=',', on_bad_lines='skip')
+predicciondf['FECHA'] = pd.to_datetime(predicciondf['FECHA'])
+
+prediccionauxdf = pd.read_csv("predictaux.csv", sep=',', on_bad_lines='skip')
+prediccionauxdf['FECHA'] = pd.to_datetime(predicciondf['FECHA'])
+
 modelo = joblib.load('modelo_glm2.pkl')
 #datam['ANO'] = datam['ANO'].str.replace('.', '').astype(int)
 
@@ -117,6 +123,7 @@ with tab1:
                     date_range = pd.date_range(start=data_actual2.loc[data_actual2.index[0], "FECHA"], end=data_actual2.loc[data_actual2.index[-1], "FECHA"])
                     day_counts = data_actual2['FECHA'].dt.date.value_counts().reindex(date_range, fill_value=0)
                     st.bar_chart(day_counts)
+                    st.write(date_range)
                 else:
                     st.info("Marca la casilla 'Diariamente' para ver la gráfica diaria.")
                 if checkbox_semanal:
@@ -163,56 +170,64 @@ with tab1:
 
 with tab2:
     st.header("Predecir accidentalidad")
-    int_min = datetime.date(2021, 1, 1)
-    int_max = datetime.date(2022, 12, 31)
-    prect_fecha = st.date_input("Ingresa una fecha", value=None, min_value=int_min, max_value=int_max)
-    prect_festi = st.selectbox("Es festivo?",
-                               ("NO FESTIVO", "FESTIVO", "SEM_SANTA", "NAVIDAD", "MADRES", "BRUJAS", "A_NUEVO"),
-                               index=None,
-                               placeholder="Seleccione No Festivo o el tipo de día feriado")
-    prect_dia = st.selectbox("Que día de la semana es?",
-                             ("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"),
-                             index=None)
-    prect_quincena = st.selectbox("Es quincena?",
-                                  (0, 1),
-                                  index=None,
-                                  placeholder="Seleccione 1:Si, 0:No")
+
+    # Agregar widgets en la barra lateral para que el usuario ingrese las fechas y configure las clases de accidente
+    int_min = datetime.date(2020, 9, 1)
+    int_max = datetime.date(2024, 12, 31)
+
+    fecha_inicio = st.date_input('Fecha de inicio', value=None, min_value=int_min, max_value=int_max)
+    fecha_fin = st.date_input('Fecha de fin', value=None, min_value=int_min, max_value=int_max)
+    st.info("El rango de predicciones permitido va hasta la fecha: 31-12-2024")
+    
     prect_clase = st.selectbox("Que clase de accidente es?",
-                              ("Atropello", "Caída de Ocupante", "Choque", "Incendio", "Volcamiento", "Otro"),
+                              ("Atropello", "Caída de Ocupante", "Choque", "Incendio", "Volcamiento", "Otro","No diferenciar por tipo"),
                               index=None)
-    # Crear un diccionario con los valores de las variables independientes para la nueva entrada
-    nueva_entrada = {
-        'FECHA': prect_fecha,
-        'FESTIVIDAD': prect_festi,
-        'DIA_SEMANA': prect_dia,
-        'DIA_QUINCENA': prect_quincena,
-        'CLASE_ACCIDENTE': prect_clase
-    }
 
-    prect_fecha = str(prect_fecha)
-    prect_festi = prect_festi
-    prect_dia = prect_dia
-    prect_quincena = prect_quincena
-    prect_clase = prect_clase
+    # Verificar que la fecha inicial sea estrictamente menor que la fecha final
+    if fecha_inicio is not None and fecha_fin is not None:
+        if fecha_inicio >= fecha_fin:
+            st.error('Error: La fecha de inicio debe ser menor que la fecha de fin.')
+        elif prect_clase is not None:
+            # Filtrar el DataFrame de festividades según el intervalo seleccionado por el usuario
+            Prediccion_intervalo = predicciondf[(predicciondf['FECHA'] >= pd.to_datetime(fecha_inicio)) & (predicciondf['FECHA'] <= pd.to_datetime(fecha_fin))]
+            Prediccion_intervalo["CLASE_ACCIDENTE"] = prect_clase
 
-    nueva_entrada2 = {
-    'FECHA':prect_fecha,
-    'FESTIVIDAD':prect_festi,
-    'DIA_SEMANA':prect_dia,
-    'DIA_QUINCENA':prect_quincena,
-    'CLASE_ACCIDENTE': prect_clase
-    }
-    if prect_fecha is not None and prect_festi is not None and prect_dia is not None and prect_quincena is not None and prect_clase is not None:
-        # Crear un DataFrame a partir de la nueva entrada
-        nueva_entrada_df = pd.DataFrame([nueva_entrada2])
+            Prediccion_intervalo_aux = prediccionauxdf[(prediccionauxdf['FECHA'] >= pd.to_datetime(fecha_inicio)) & (prediccionauxdf['FECHA'] <= pd.to_datetime(fecha_fin))]
+            Prediccion_intervalo_aux["CLASE_ACCIDENTE"] = prect_clase
 
-        # Realizar la predicción usando el modelo results2
-        prediccion = modelo.predict(nueva_entrada_df)
+            # Realizar la predicción usando el modelo results2
+            prediccion = modelo.predict(Prediccion_intervalo)
+            Prediccion_intervalo_df = pd.DataFrame({"PREDICCION": prediccion})
+            Prediccion_intervalo2 = pd.concat([Prediccion_intervalo_aux, Prediccion_intervalo_df], axis=1)
 
-        st.write("Número predicho de accidentes:", prediccion[0])
+            st.write("Predicciones en el intervalo definido")
+            st.write(Prediccion_intervalo2)
+
+            if checkbox_diario:
+                st.subheader("Diariamente")
+                date_range_pred = pd.date_range(start=fecha_inicio, end=fecha_fin)
+                day_counts_pred = Prediccion_intervalo2['FECHA'].dt.date.value_counts().reindex(date_range_pred, fill_value=0)
+                st.bar_chart(day_counts_pred)
+            else:
+                st.info("Marca la casilla 'Diariamente' para ver la gráfica diaria.")
+
+            if checkbox_semanal:
+                st.subheader("Semanalmente")
+                weekly_counts_pred = Prediccion_intervalo2['SEMANA'].value_counts().sort_index()
+                st.bar_chart(weekly_counts_pred)
+            else:
+                st.info("Marca la casilla 'Semanalmente' para ver la gráfica diaria.")
+
+            if checkbox_mensual:
+                st.subheader("Mensualmente")
+                month_counts_pred = Prediccion_intervalo2['MES'].value_counts().sort_index()
+                st.bar_chart(month_counts_pred)
+            else:
+                st.info("Marca la casilla 'Mensualmente' para ver la gráfica diaria.")
+        else:
+            st.error("Por favor, complete todas las entradas antes de realizar la predicción.")
     else:
         st.error("Por favor, complete todas las entradas antes de realizar la predicción.")
-    # Mostrar el número predicho de accidentes en la aplicación Streamlit
 
 
 with tab3:
