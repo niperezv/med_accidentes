@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.pylab as plt
 import joblib
 import geopandas as gpd
+import plotly.express as px
 import folium
 import pandas as pd
 import json
@@ -205,25 +206,39 @@ with tab2:
 
             if checkbox_diario:
                 st.subheader("Diariamente")
-                date_range_pred = pd.date_range(start=fecha_inicio, end=fecha_fin)
-                day_counts_pred = Prediccion_intervalo2['FECHA'].dt.date.value_counts().reindex(date_range_pred, fill_value=0)
-                st.bar_chart(day_counts_pred)
+
+                # Crear el gráfico de líneas con puntos y formato de números enteros para los puntos
+                fig = px.line(Prediccion_intervalo2, x='FECHA', y='PREDICCION', title='Predicciones Diarias',
+                              labels={'PREDICCION': 'Número de Accidentes', 'FECHA': 'Fecha'},
+                              hover_data={'PREDICCION': ':.0f'})  # Utilizar formato de números enteros para los puntos
+    
+                st.plotly_chart(fig)
             else:
                 st.info("Marca la casilla 'Diariamente' para ver la gráfica diaria.")
 
             if checkbox_semanal:
                 st.subheader("Semanalmente")
-                weekly_counts_pred = Prediccion_intervalo2['SEMANA'].value_counts().sort_index()
-                st.bar_chart(weekly_counts_pred)
+                weekly_counts_pred = Prediccion_intervalo2['SEMANA'].value_counts().sort_index().reset_index()
+                weekly_counts_pred.columns = ['Semana', 'Número de Accidentes']
+
+                # Crear el gráfico de barras agrupadas para las predicciones semanales
+                fig_weekly = px.bar(weekly_counts_pred, x='Semana', y='Número de Accidentes',
+                                    title='Número de Accidentes Semanal', labels={'Número de Accidentes': 'Número de Accidentes', 'Semana': 'Semana'})
+                st.plotly_chart(fig_weekly)
             else:
-                st.info("Marca la casilla 'Semanalmente' para ver la gráfica diaria.")
+                st.info("Marca la casilla 'Semanalmente' para ver la gráfica semanal.")
 
             if checkbox_mensual:
                 st.subheader("Mensualmente")
-                month_counts_pred = Prediccion_intervalo2['MES'].value_counts().sort_index()
-                st.bar_chart(month_counts_pred)
+                month_counts_pred = Prediccion_intervalo2['MES'].value_counts().sort_index().reset_index()
+                month_counts_pred.columns = ['Mes', 'Número de Accidentes']
+
+                # Crear el gráfico de barras agrupadas para las predicciones mensuales
+                fig_monthly = px.bar(month_counts_pred, x='Mes', y='Número de Accidentes',
+                                     title='Número de Accidentes Mensual', labels={'Número de Accidentes': 'Número de Accidentes', 'Mes': 'Mes'})
+                st.plotly_chart(fig_monthly)
             else:
-                st.info("Marca la casilla 'Mensualmente' para ver la gráfica diaria.")
+                st.info("Marca la casilla 'Mensualmente' para ver la gráfica mensual.")
         else:
             st.error("Por favor, complete todas las entradas antes de realizar la predicción.")
     else:
