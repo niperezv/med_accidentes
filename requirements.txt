@@ -34,6 +34,7 @@ pandas==1.5.3
 patsy==0.5.3
 Pillow==10.1.0
 protobuf==4.24.4
+plotly==5.1.0
 pyarrow==13.0.0
 pydeck==0.8.1b0
 Pygments==2.16.1
