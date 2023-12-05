@@ -218,25 +218,31 @@ with tab2:
 
             if checkbox_semanal:
                 st.subheader("Semanalmente")
-                weekly_counts_pred = Prediccion_intervalo2['SEMANA'].value_counts().sort_index().reset_index()
-                weekly_counts_pred.columns = ['Semana', 'Número de Accidentes']
+                weekly_sum_pred = Prediccion_intervalo2.groupby('SEMANA')['PREDICCION'].sum().reset_index()
+                weekly_sum_pred['PREDICCION'] = round(weekly_sum_pred['PREDICCION']).astype(int)
 
-                # Crear el gráfico de barras agrupadas para las predicciones semanales
-                fig_weekly = px.bar(weekly_counts_pred, x='Semana', y='Número de Accidentes',
-                                    title='Número de Accidentes Semanal', labels={'Número de Accidentes': 'Número de Accidentes', 'Semana': 'Semana'})
+                # Crear el gráfico de barras para la suma de predicciones semanales
+                fig_weekly = px.bar(weekly_sum_pred, x='SEMANA', y='PREDICCION',
+                                    title='Suma de Predicciones Semanales',
+                                    labels={'PREDICCION': 'Suma de Predicciones', 'SEMANA': 'Semana'})
                 st.plotly_chart(fig_weekly)
+
             else:
                 st.info("Marca la casilla 'Semanalmente' para ver la gráfica semanal.")
 
             if checkbox_mensual:
                 st.subheader("Mensualmente")
-                month_counts_pred = Prediccion_intervalo2['MES'].value_counts().sort_index().reset_index()
-                month_counts_pred.columns = ['Mes', 'Número de Accidentes']
+                month_sum_pred = Prediccion_intervalo2.groupby('MES')['PREDICCION'].sum().reset_index()
 
-                # Crear el gráfico de barras agrupadas para las predicciones mensuales
-                fig_monthly = px.bar(month_counts_pred, x='Mes', y='Número de Accidentes',
-                                     title='Número de Accidentes Mensual', labels={'Número de Accidentes': 'Número de Accidentes', 'Mes': 'Mes'})
+                # Redondear la suma de predicciones mensuales a números enteros
+                month_sum_pred['PREDICCION'] = round(month_sum_pred['PREDICCION']).astype(int)
+
+                # Crear el gráfico de barras para la suma de predicciones mensuales
+                fig_monthly = px.bar(month_sum_pred, x='MES', y='PREDICCION',
+                                     title='Suma Aproximada de Predicciones Mensuales',
+                                    labels={'PREDICCION': 'Suma Aproximada de Predicciones', 'MES': 'Mes'})
                 st.plotly_chart(fig_monthly)
+
             else:
                 st.info("Marca la casilla 'Mensualmente' para ver la gráfica mensual.")
         else:
