@@ -218,7 +218,7 @@ with tab2:
 
             if checkbox_semanal:
                 st.subheader("Semanalmente")
-                weekly_sum_pred = Prediccion_intervalo2.groupby('AñoMes')['PREDICCION'].sum().reset_index()
+                weekly_sum_pred = Prediccion_intervalo2.groupby('SEMANA')['PREDICCION'].sum().reset_index()
                 weekly_sum_pred['PREDICCION'] = round(weekly_sum_pred['PREDICCION']).astype(int)
 
                 # Crear el gráfico de barras para la suma de predicciones semanales
