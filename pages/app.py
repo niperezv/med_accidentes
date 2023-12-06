@@ -204,6 +204,11 @@ with tab2:
             st.write("Predicciones en el intervalo definido")
             st.write(Prediccion_intervalo2)
 
+            Prediccion_intervalo3 = Prediccion_intervalo2.copy()
+            Prediccion_intervalo3['AñoSem'] = Prediccion_intervalo3['FECHA'].dt.strftime('%Y%U')
+            Prediccion_intervalo3['AñoMes'] = Prediccion_intervalo3['FECHA'].dt.strftime('%Y%m')
+            st.write(Prediccion_intervalo3)
+
             if checkbox_diario:
                 st.subheader("Diariamente")
 
