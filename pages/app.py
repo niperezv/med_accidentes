@@ -204,11 +204,6 @@ with tab2:
             st.write("Predicciones en el intervalo definido")
             st.write(Prediccion_intervalo2)
 
-            Prediccion_intervalo3 = Prediccion_intervalo2.copy()
-            Prediccion_intervalo3['AñoSem'] = Prediccion_intervalo3['FECHA'].dt.strftime('%Y%U')
-            Prediccion_intervalo3['AñoMes'] = Prediccion_intervalo3['FECHA'].dt.strftime('%Y%m')
-            st.write(Prediccion_intervalo3)
-
             if checkbox_diario:
                 st.subheader("Diariamente")
 
@@ -223,15 +218,13 @@ with tab2:
 
             if checkbox_semanal:
                 st.subheader("Semanalmente")
-                weekly_sum_pred = Prediccion_intervalo3.groupby('AñoSem')['PREDICCION'].sum().reset_index()
+                weekly_sum_pred = Prediccion_intervalo2.groupby('SEMANA')['PREDICCION'].sum().reset_index()
                 weekly_sum_pred['PREDICCION'] = round(weekly_sum_pred['PREDICCION']).astype(int)
-                st.write(weekly_sum_pred)
-
 
                 # Crear el gráfico de barras para la suma de predicciones semanales
-                fig_weekly = px.bar(weekly_sum_pred, x='AñoSem', y='PREDICCION',
+                fig_weekly = px.bar(weekly_sum_pred, x='SEMANA', y='PREDICCION',
                                     title='Suma de Predicciones Semanales',
-                                    labels={'PREDICCION': 'Suma de Predicciones', 'AñoSem': 'Semana'})
+                                    labels={'PREDICCION': 'Suma de Predicciones', 'SEMANA': 'Semana'})
                 st.plotly_chart(fig_weekly)
 
             else:
