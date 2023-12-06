@@ -227,9 +227,9 @@ with tab2:
                 weekly_sum_pred['PREDICCION'] = round(weekly_sum_pred['PREDICCION']).astype(int)
 
                 # Crear el gráfico de barras para la suma de predicciones semanales
-                fig_weekly = px.bar(weekly_sum_pred, x='SEMANA', y='PREDICCION',
+                fig_weekly = px.bar(weekly_sum_pred, x='AñoSem', y='PREDICCION',
                                     title='Suma de Predicciones Semanales',
-                                    labels={'PREDICCION': 'Suma de Predicciones', 'SEMANA': 'Semana'})
+                                    labels={'PREDICCION': 'Suma de Predicciones', 'AñoSem': 'Semana'})
                 st.plotly_chart(fig_weekly)
 
             else:
