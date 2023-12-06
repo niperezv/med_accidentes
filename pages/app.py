@@ -225,6 +225,8 @@ with tab2:
                 st.subheader("Semanalmente")
                 weekly_sum_pred = Prediccion_intervalo3.groupby('AñoSem')['PREDICCION'].sum().reset_index()
                 weekly_sum_pred['PREDICCION'] = round(weekly_sum_pred['PREDICCION']).astype(int)
+                st.write(weekly_sum_pred)
+
 
                 # Crear el gráfico de barras para la suma de predicciones semanales
                 fig_weekly = px.bar(weekly_sum_pred, x='AñoSem', y='PREDICCION',
