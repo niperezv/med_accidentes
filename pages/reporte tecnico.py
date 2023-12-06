@@ -60,7 +60,7 @@ texto_datos = """
 st.markdown(texto_datos)
 st.subheader("1.1. Integración de datos Geo-Medellín")
 st.write("También se hace la carga de la *Tabla 1* que contiene la información de las veredas, los barrios, las comunas de Medellín y los días festivos. La información vista en las siguientes 2 tablas será importante más adelante para hacer el mapeo de la accidentalidad en Medellín en diversos mapas.")
-st.image('images\_tabla_1.PNG', caption='Tabla 1: Tabla de barrios y comunas')
+st.image('images/_grafico_1.png', caption='Tabla 1: Tabla de barrios y comunas')
 st.subheader("1.2 Días feriados")
 st.write("Para las fechas especiales se crean dos nuevas variables; FESTIVIDAD y FECHA. Estas variables provienen de una base de datos externa que se adiciona a la base de análisis y abarca los días feriados en Colombia desde 2014 hasta 2022")
 st.image('images\_tabla_2.PNG', caption='Tabla 2: Tabla de festividades')
