@@ -60,10 +60,10 @@ texto_datos = """
 st.markdown(texto_datos)
 st.subheader("1.1. Integración de datos Geo-Medellín")
 st.write("También se hace la carga de la *Tabla 1* que contiene la información de las veredas, los barrios, las comunas de Medellín y los días festivos. La información vista en las siguientes 2 tablas será importante más adelante para hacer el mapeo de la accidentalidad en Medellín en diversos mapas.")
-st.image('images/_tabla_1.png', caption='Tabla 1: Tabla de barrios y comunas')
+st.image('images/_tabla_1.PNG', caption='Tabla 1: Tabla de barrios y comunas')
 st.subheader("1.2 Días feriados")
 st.write("Para las fechas especiales se crean dos nuevas variables; FESTIVIDAD y FECHA. Estas variables provienen de una base de datos externa que se adiciona a la base de análisis y abarca los días feriados en Colombia desde 2014 hasta 2022")
-st.image('images/_tabla_2.png', caption='Tabla 2: Tabla de festividades')
+st.image('images/_tabla_2.PNG', caption='Tabla 2: Tabla de festividades')
 st.subheader("1.3 Depuración")
 texto2 = '''A continuación se eliminan las columnas consideradas como innecesarias para el modelo: ["CBML", "DIRECCION ENCASILLADA", "EXPEDIENTE", "FECHA_ACCIDENTES", "NRO_RADICADO", "X", "Y"]. También se cruzan las fechas festivos con los días de la base de datos principal y se eliminan los valores nulos de ellas.
 
@@ -72,7 +72,7 @@ Luego de hacer la revisión de las variables y eliminar los datos irrecuperables
 Luego del proceso de depuración la base de datos se ve de esta manera:
 '''
 st.markdown(texto2)
-st.image('images/_tabla_3_.png', caption='Tabla 3: Tabla de base de datos depurada')
+st.image('images/_tabla_3_.PNG', caption='Tabla 3: Tabla de base de datos depurada')
 st.header("2. Análisis descriptivo")
 st.subheader("2.1 Distribución de accidentes por gravedad")
 texto3 = '''A continuación en el Gráfico 1 se muestran los tipos (o la severidad) de los accidentes. Se observa que la gran mayoría de accidentes son accidentes que terminan en heridos y en solamente daños materiales. Se resalta la gran diferencia que tienen estos dos tipos de accidentes al compararlos con los accidentes que involucran fatalidades.
@@ -142,23 +142,23 @@ texto2 = '''El primer modelo se basó en un Modelo Lineal Generalizado (GLM) con
 Como nos interesa predecir el número de accidentes por unidad de tiempo, resulta conveniente utilizar un modelo lineal generalizado con la distribución Poisson. Para este primer modelo, consideraremos únicamente las variables FESTIVIDAD Y DIA_SEMANA para predecir la accidentalidad.
 '''
 st.markdown(texto2)
-st.image('images/_tabla_4.png', caption='Tabla 4: Tabla de entrada para el modelo GLM Poisson')
+st.image('images/_tabla_4.PNG', caption='Tabla 4: Tabla de entrada para el modelo GLM Poisson')
 st.write("Podemos ver a continuación los resultados generalizados del modelo de regresión propuesto.")
-st.image('images/_imagen_1.png', caption='Imagen 1: Serie de tiempo original vs predicción.')
+st.image('images/_imagen_1.PNG', caption='Imagen 1: Serie de tiempo original vs predicción.')
 st.subheader("3.1.2 Serie de tiempo mensual de NRO_ACCID vs predicción")
 st.write("A continuación podemos ver el ajuste del modelo en comparación con la gráfica de series de tiempo mostrada anteriormente.")
 st.image('images/_grafico_12.png', caption='Gráfico 12: Serie de tiempo original vs predicción. ')
 st.subheader("Métricas")
 st.write("Entrenamiento 2014 - 2018: Para los datos de entrenamiento, se obtiene un MAE de 14.7347, un MSE de 382.8113, y un R2 de 0.4565.")
 st.write("Prediccion y evaluación del año 2019 Se muestran las predicciones realizadas para el año 2019. El día primero de enero es representado con un 0 y el 31 de diciembre con el 364.")
-st.image('images/_tabla_5.png', caption='Tabla 5: Predicciones 2019. ')
+st.image('images/_tabla_5.PNG', caption='Tabla 5: Predicciones 2019. ')
 st.write("Métricas de predicción y evaluación año 2019: Para los datos de validación del año 2019, se obtiene un MAE de 17.5274, y un R2 de 0.4123. ")
 st.write("Métricas de predicción y evaluación año 2020: Para los datos de validación del año 2020, se obtiene un MAE de 46.03012, y un R2 de -0.9211. Estos valores son mucho mejores que los obtenidos con el modelo anterior.")
 st.subheader("3.2. Modelo 2 GLM con variable CLASE_ACCIDENTE")
 st.write("El segundo modelo también se basó en un Modelo Lineal Generalizado (GLM) con distribución Poisson, pero esta vez se incluyó la variable 'CLASE_ACCIDENTE' como una variable categórica adicional.")
-st.image('images/_tabla_6.png', caption='Tabla 6: Tabla de entrada para el modelo 2 GLM Poisson')
+st.image('images/_tabla_6.PNG', caption='Tabla 6: Tabla de entrada para el modelo 2 GLM Poisson')
 st.write("Podemos ver a continuación los resultados generalizados del modelo de regresión propuesto.")
-st.image('images/_imagen_2.png', caption='Imagen 2: Generalized Linear Model Regression Results')
+st.image('images/_imagen_2.PNG', caption='Imagen 2: Generalized Linear Model Regression Results')
 st.subheader("3.2.1 Serie de tiempo mensual de NRO_ACCID vs predicción")
 texto3 = '''A continuación podemos ver el ajuste del modelo en comparación con la gráfica de series de tiempo mostrada anteriormente. Podemos notar que si bien el modelo parece ajustarse bien a la media de la base de datos original,
  este tiene una varianza menor.
@@ -204,15 +204,15 @@ texto6 = '''Con la función summary clasificamos los grupos
 El grupo 1 está caracterizado por tener una cantidad muy baja de accidentes en general, a excepción de los choques pues cuenta con una media de 576.
 '''
 st.markdown(texto6)
-st.image('images/_tabla_7.png', caption='Tabla 7: Tabla de clasificación Grupo 1')
+st.image('images/_tabla_7.PNG', caption='Tabla 7: Tabla de clasificación Grupo 1')
 st.write("El grupo 2 es el que representa la mayor accidentalidad de tipo choque, con una media de 2850. También tiene una gran cantidad de accidentes en los demás tipos.")
-st.image('images/_tabla_8.png', caption='Tabla 8: Tabla de clasificación Grupo 2')
+st.image('images/_tabla_8.PNG', caption='Tabla 8: Tabla de clasificación Grupo 2')
 st.write("En general, el grupo 3 cuenta con la menor cantidad de accidentes si lo comparamos con los demás grupos.")
-st.image('images/_tabla_9.png', caption='Tabla 9: Tabla de clasificación Grupo 3')
+st.image('images/_tabla_9.PNG', caption='Tabla 9: Tabla de clasificación Grupo 3')
 st.write("El grupo 4 contiene una cantidad media de choques relativamente alta. Los demás parámetros son bajos.")
-st.image('images/_tabla_10.png', caption='Tabla 10: Tabla de clasificación Grupo 4')
+st.image('images/_tabla_10.PNG', caption='Tabla 10: Tabla de clasificación Grupo 4')
 st.write("El grupo 5 también tiene una cantidad de choques alta y es el que más incendios contiene, teniendo en cuenta este parámetro es bajo. Notamos un alza en accidentes de tipo 'otro'.")
-st.image('images/_tabla_11.png', caption='Tabla 12: Tabla de clasificación Grupo 5')
+st.image('images/_tabla_11.PNG', caption='Tabla 12: Tabla de clasificación Grupo 5')
 st.header("Referencias")
 texto1 = '''
 •de Medellín, A. (s/f). MEDATA. Alcaldía de Medellín. Recuperado el 15 de octubre de 2023, de https://medata.gov.co/dataset/incidentes-viales
